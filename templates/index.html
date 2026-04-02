@@ -38,7 +38,7 @@
             .gameBoard{
                 height: 575px;
                 width: 791px;
-                background-image: url('GameBoard.png');
+                background-image: url("{{ url_for('static', filename='Gameboard.png') }}");
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -82,7 +82,15 @@
                 display: block;
                 width: 80px;
                 height: 80px;
-                background-image: url("ConnectRed.png");
+                background-image: url("{{ url_for('static', filename='ConnectRed.png') }}");
+                background-size: cover;
+            }
+            .aiPiece{
+                position: absolute;
+                display: block;
+                width: 80px;
+                height: 80px;
+                background-image: url("{{ url_for('static', filename='ConnectYellow.png') }}");
                 background-size: cover;
             }
         </style>
@@ -96,7 +104,7 @@
 
             <div class="pieceLayer" id="pieces"></div>
 
-            <img src="GameBoard.png" class="boardImage">
+            <img src="{{ url_for('static', filename='GameBoard.png') }}" class="boardImage">
 
             <div>
                 <button class="columnButton" style="left:67px" onclick="dropPlayer(1,0)"></button>
@@ -124,12 +132,13 @@
             let colPos = [70,166,259,354,448,542,636];
             
             function reset(){
-                let board = [[0,0,0,0,0,0,0],
+                board = [[0,0,0,0,0,0,0],
                          [0,0,0,0,0,0,0],
                          [0,0,0,0,0,0,0],
                          [0,0,0,0,0,0,0],
                          [0,0,0,0,0,0,0],
                          [0,0,0,0,0,0,0]];
+                load();
             }
             
             function dropPlayer(player, col){
@@ -165,7 +174,11 @@
                             newDiv.style.left = colPos[j] + "px";
                             container.appendChild(newDiv);
                         }else if(board[i][j]==2){
-
+                            let newDiv = document.createElement("div");
+                            newDiv.classList.add("aiPiece");
+                            newDiv.style.top = getRowTop(i) + "px";
+                            newDiv.style.left = colPos[j] + "px";
+                            container.appendChild(newDiv);
                         }else{}
                     }
                 }
