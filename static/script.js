@@ -112,6 +112,10 @@ function isFullBoard(){
     return true;
 }
 
+function isWin(){
+    return false;
+}
+
 const startTop = 26;
 const cellSize = 80;
 const spacing = 9;
