@@ -1,13 +1,17 @@
 let isPlayerTurn = true;
 let ai_col = null;
-let board = [[0,0,0,0,0,0,0],
-             [0,0,0,0,0,0,0],
-             [0,0,0,0,0,0,0],
-             [0,0,0,0,0,0,0],
-             [0,0,0,0,0,0,0],
-             [0,0,0,0,0,0,0]];
+let win = 0;
+let board;
             
 const colPos = [70,166,259,354,448,542,636];
+
+document.addEventListener("DOMContentLoaded", () => {
+    game();
+});
+
+function game(){
+    reset();
+}
             
 function reset(){
     board = [[0,0,0,0,0,0,0],
@@ -32,12 +36,35 @@ function dropPlayer(col){
         isPlayerTurn = false;
         console.log(board);
         load();
+        aiTurn();
     }
 }
 
-function aiTurn(){
+async function fetchAI(board) {
+    try {
+        let response = await fetch("/get-ai-move", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ board: board })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        let data = await response.json();
+        return data.move;
+    } catch (error) {
+        console.error("Error getting AI move:", error);
+    }
+}
+
+async function aiTurn(){
+    ai_col = await fetchAI(board);
     if((ai_col!=null) && (!isPlayerTurn)){
-        if(col>=0 && col<=6){
+        if(ai_col>=0 && ai_col<=6){
             for(let i=5;i>=0;i--){
                 if(board[i][ai_col]==0){
                     board[i][ai_col]=2;
@@ -45,7 +72,6 @@ function aiTurn(){
                 }
             }
         }
-        ai_col = null;
         isPlayerTurn = true;
         console.log(board);
         load();
@@ -73,6 +99,17 @@ function load(){
             }else{}
         }
     }
+}
+
+function isFullBoard(){
+    for(let r = 0; r<=5;r++){
+        for(let c = 0;c<=6;c++){
+            if(board[r][c]==0){
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 const startTop = 26;
